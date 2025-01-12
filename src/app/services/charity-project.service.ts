@@ -7,7 +7,7 @@ import { CharityProject } from '../models/charity-project';
   providedIn: 'root'
 })
 export class CharityProjectService {
-  private apiUrl = 'http://localhost:8080/api/charity-projects';
+  private apiUrl = 'https://charitybackend.onrender.com/api/charity-projects';
 
   constructor(private http: HttpClient) { }
 

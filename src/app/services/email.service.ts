@@ -9,7 +9,7 @@ import autoTable from 'jspdf-autotable';
   providedIn: 'root'
 })
 export class EmailService {
-  private apiUrl = 'http://localhost:8080/api/email'; // Replace with your actual email API endpoint
+  private apiUrl = 'https://charitybackend.onrender.com/api/email'; // Replace with your actual email API endpoint
 
   constructor(private http: HttpClient) { }
 

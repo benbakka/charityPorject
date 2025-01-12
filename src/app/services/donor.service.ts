@@ -7,7 +7,7 @@ import { Donor } from '../models/donor';
   providedIn: 'root'
 })
 export class DonorService {
-  private baseUrl = 'http://localhost:8080/api/donors';
+  private baseUrl = 'https://charitybackend.onrender.com/api/donors';
 
   constructor(private http: HttpClient) {}
 

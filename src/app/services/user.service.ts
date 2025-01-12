@@ -7,7 +7,7 @@ import { User } from '../models/user.model';
   providedIn: 'root'
 })
 export class UserService {
-  private apiUrl = 'http://localhost:8080/api/users';
+  private apiUrl = 'https://charitybackend.onrender.com/api/users';
 
   constructor(private http: HttpClient) {}
 
@@ -23,7 +23,7 @@ export class UserService {
         users.forEach(user => {
           // Assuming the image is relative, add base URL if necessary
           if (user.photo && !user.photo.startsWith('http')) {
-            user.photo = `http://localhost:8080${user.photo}`;
+            user.photo = `https://charitybackend.onrender.com${user.photo}`;
           }
         });
         return users;
@@ -63,6 +63,6 @@ export class UserService {
   }
 
   getProxiedImage(imageUrl: string): Observable<any> {
-    return this.http.post('http://localhost:8080/api/proxy/image', { url: imageUrl });
+    return this.http.post('https://charitybackend.onrender.com/api/proxy/image', { url: imageUrl });
   }
 }

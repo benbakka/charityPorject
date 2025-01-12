@@ -27,7 +27,14 @@
           },
           "options": {
             "assets": [
-              "src/assets"
+              "src/favicon.ico",
+              "src/assets",
+              "src/web.config",
+              {
+                "glob": "**/*",
+                "input": "src/assets/",
+                "output": "/assets/"
+              }
             ],
             "index": "src/index.html",
             "browser": "src/main.ts",
@@ -38,7 +45,8 @@
             ],
             "scripts": [],
             "styles": [
-              "src/global_styles.css"
+              "src/global_styles.css",
+              "src/styles.css"
             ],
             "tsConfig": "tsconfig.app.json"
           }

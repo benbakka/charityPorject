@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { Router } from '@angular/router';
 
-const AUTH_API = 'http://localhost:8080/api/auth/';
+const AUTH_API = 'https://charitybackend.onrender.com/api/auth/';
 
 interface AuthResponse {
   token: string;

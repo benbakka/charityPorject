@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: 'http://localhost:8080/api'  // Change this to your production API URL
+  apiUrl: 'https://charitybackend.onrender.com/api'  // Change this to your production API URL
 };
