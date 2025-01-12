@@ -1,0 +1,28 @@
+.field {
+    margin-bottom: 1rem;
+}
+
+:host ::ng-deep .p-dialog .p-dialog-content {
+    padding: 2rem;
+}
+
+.donor-table {
+    margin-top: 1rem;
+}
+
+.table-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.action-buttons button {
+    margin-right: 0.5rem;
+}
+
+.required-field::after {
+    content: "*";
+    color: red;
+    margin-left: 4px;
+}

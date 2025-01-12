@@ -1,0 +1,614 @@
+<p-toast></p-toast>
+<p-confirmDialog></p-confirmDialog>
+
+<div class="orphan-container">
+  <div class="header">
+    <div class="title">
+      <h2>Orphan Management</h2>
+    </div>
+    <div class="header-buttons">
+      <button pButton 
+              label="+ Add New Orphan"
+              (click)="showAddDialog()" 
+              class="add-button">
+      </button>
+      <button pButton 
+              icon="pi pi-trash"
+              label="Delete All"
+              (click)="deleteAll()" 
+              class="delete-button">
+      </button>
+    </div>
+  </div>
+
+  <div class="filter-section">
+    <div class="filters">
+      <div class="input-group">
+        <div class="input-label">
+          <i style="border-color: #4CAF50;" class="pi pi-user"></i>
+          <span>Name</span>
+        </div>
+        <input pInputText type="text" [(ngModel)]="nameFilter" (input)="applyFilters()" placeholder="Search by name..." class="input-field" />
+      </div>
+
+      <div class="input-group">
+        <div class="input-label">
+          <i style="border-color: #4CAF50;" class="pi pi-id-card"></i>
+          <span>ID</span>
+        </div>
+        <input pInputText type="text" [(ngModel)]="idFilter" (input)="applyFilters()" placeholder="Search by ID..." class="input-field" />
+      </div>
+
+      <div class="input-group">
+        <div class="input-label">
+          <i style="border-color: #4CAF50;" class="pi pi-globe"></i>
+          <span>Country</span>
+        </div>
+        <p-dropdown [options]="countries" 
+                   [(ngModel)]="countryFilter" 
+                   (onChange)="applyFilters()"
+                   [placeholder]="'Select Country'" 
+                   optionLabel="name" 
+                   optionValue="abbreviation"
+                   [showClear]="true" 
+                   styleClass="input-field">
+        </p-dropdown>
+      </div>
+
+      <div class="input-group">
+        <div class="input-label">
+          <i style="border-color: #4CAF50;" class="pi pi-calendar"></i>
+          <span>Age</span>
+        </div>
+        <p-inputNumber [(ngModel)]="ageFilter" 
+                      (onInput)="applyFilters()" 
+                      [showButtons]="true" 
+                      [min]="0" 
+                      [max]="100"
+                      placeholder="Enter age"
+                      styleClass="input-field">
+        </p-inputNumber>
+      </div>
+
+      <button pButton 
+              class="clear-filters-btn" 
+              icon="pi pi-filter-slash" 
+              label="Clear Filters"
+              (click)="clearFilters()">
+      </button>
+    </div>
+  </div>
+
+  <p-table [value]="filteredOrphans" 
+           [tableStyle]="{'min-width': '50rem'}"
+           [paginator]="true" 
+           [rows]="10" 
+           [showCurrentPageReport]="false"
+           styleClass="orphan-table">
+    <ng-template pTemplate="header">
+      <tr>
+        <th>Photo</th>
+        <th>Orphan ID</th>
+        <th>Name</th>
+        <th>Age</th>
+        <th>Country</th>
+        <th>Health Status</th>
+        <th>Actions</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-orphan>
+      <tr>
+        <td>
+          <img [src]="orphan.photo" class="orphan-photo" [alt]="orphan.firstName + ' photo'" (click)="openPhotoPreview(orphan.photo)"/>
+
+        </td>
+        <td>{{ orphan.orphanId }}</td>
+        <td>{{ orphan.firstName }} {{ orphan.lastName }}</td>
+        <td>{{ calculateAge(orphan.dob) }}</td>
+        <td>{{ getCountryName(orphan.country) }}</td>
+        <td>{{ orphan.healthStatus }}</td>
+        <td>
+          <div class="action-buttons">
+            <button pButton icon="pi pi-pencil" class="p-button-rounded p-button-success action-btn" (click)="editOrphan(orphan)"></button>
+            <button pButton icon="pi pi-trash" class="p-button-rounded p-button-danger action-btn" (click)="deleteOrphan(orphan)"></button>
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+
+  <p-dialog [(visible)]="displayDialog" 
+            [modal]="true" 
+            [style]="{width: '80vw'}" 
+            [maximizable]="true"
+            [closable]="true"
+            [closeOnEscape]="true"
+            [dismissableMask]="true">
+    <ng-template pTemplate="header">
+      <div class="dialog-header">
+        <h2>{{dialogHeader}}</h2>
+      </div>
+    </ng-template>
+    <div class="orphan-form">
+      <div class="form-section">
+        <h3>Basic Information</h3>
+        <div class="field">
+          <label for="orphanId">Orphan ID</label>
+          <input id="orphanId" type="text" pInputText [(ngModel)]="selectedOrphan.orphanId" readonly />
+        </div>
+        <div class="field">
+          <label for="firstName">First Name</label>
+          <input id="firstName" type="text" pInputText [(ngModel)]="selectedOrphan.firstName" />
+        </div>
+        <div class="field">
+          <label for="lastName">Last Name</label>
+          <input id="lastName" type="text" pInputText [(ngModel)]="selectedOrphan.lastName" />
+        </div>
+        <div class="field">
+          <label for="dob">Date of Birth</label>
+          <p-calendar id="dob" 
+                     [(ngModel)]="selectedOrphan.dob" 
+                     [showIcon]="true"
+                     [baseZIndex]="9999"
+                     [appendTo]="'body'"
+                     styleClass="calendar-overlay"></p-calendar>
+        </div>
+        <div class="field">
+          <label for="placeOfBirth">Place of Birth</label>
+          <input id="placeOfBirth" type="text" pInputText [(ngModel)]="selectedOrphan.placeOfBirth" />
+        </div>
+        <div class="field">
+          <label for="gender">Gender</label>
+          <p-dropdown id="gender" [options]="genderOptions" [(ngModel)]="selectedOrphan.gender"></p-dropdown>
+        </div>
+        <div class="field">
+          <label for="country">Country</label>
+          <select id="country" 
+                  [(ngModel)]="selectedOrphan.country" 
+                  (ngModelChange)="generateOrphanId()" 
+                  class="select-field">
+            <option value="">Select a country</option>
+            <option *ngFor="let country of countries" [value]="country.abbreviation">{{ country.name }}</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="location">Location</label>
+          <input id="location" type="text" pInputText [(ngModel)]="selectedOrphan.location" />
+        </div>
+        <div class="field">
+          <label for="healthStatus">Health Status</label>
+          <input id="healthStatus" type="text" pInputText [(ngModel)]="selectedOrphan.healthStatus" />
+        </div>
+        <div class="field">
+          <label for="specialNeeds">Special Needs</label>
+          <textarea id="specialNeeds" pInputTextarea [(ngModel)]="selectedOrphan.specialNeeds"></textarea>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h3>Family Information</h3>
+        <div class="field">
+          <label for="ethnicGroup">Ethnic Group</label>
+          <input id="ethnicGroup" type="text" pInputText [(ngModel)]="selectedOrphan.familyInformation.ethnicGroup" />
+        </div>
+        <div class="field">
+          <label for="spokenLanguage">Spoken Language</label>
+          <input id="spokenLanguage" type="text" pInputText [(ngModel)]="selectedOrphan.familyInformation.spokenLanguage" />
+        </div>
+        <div class="field">
+          <label for="fatherName">Father's Name</label>
+          <input id="fatherName" type="text" pInputText [(ngModel)]="selectedOrphan.familyInformation.fatherName" />
+        </div>
+        <div class="field">
+          <label for="fatherDateOfDeath">Father's Date of Death</label>
+          <p-calendar id="fatherDateOfDeath" 
+                     [(ngModel)]="selectedOrphan.familyInformation.fatherDateOfDeath" 
+                     [showIcon]="true"
+                     [baseZIndex]="9999"
+                     [appendTo]="'body'"
+                     styleClass="calendar-overlay"></p-calendar>
+        </div>
+        <div class="field">
+          <label for="fatherCauseOfDeath">Father's Cause of Death</label>
+          <input id="fatherCauseOfDeath" type="text" pInputText [(ngModel)]="selectedOrphan.familyInformation.fatherCauseOfDeath" />
+        </div>
+        <div class="field">
+          <label for="motherName">Mother's Name</label>
+          <input id="motherName" type="text" pInputText [(ngModel)]="selectedOrphan.familyInformation.motherName" />
+        </div>
+        <div class="field">
+          <label for="motherStatus">Mother's Status</label>
+          <input id="motherStatus" type="text" pInputText [(ngModel)]="selectedOrphan.familyInformation.motherStatus" />
+        </div>
+        <div class="field">
+          <label for="motherDateOfDeath">Mother's Date of Death</label>
+          <p-calendar id="motherDateOfDeath" 
+                     [(ngModel)]="selectedOrphan.familyInformation.motherDateOfDeath" 
+                     [showIcon]="true"
+                     [baseZIndex]="9999"
+                     [appendTo]="'body'"
+                     styleClass="calendar-overlay"></p-calendar>
+        </div>
+        <div class="field">
+          <label for="motherCauseOfDeath">Mother's Cause of Death</label>
+          <input id="motherCauseOfDeath" type="text" pInputText [(ngModel)]="selectedOrphan.familyInformation.motherCauseOfDeath" />
+        </div>
+        <div class="field">
+          <label for="numberOfSiblings">Number of Siblings</label>
+          <p-inputNumber id="numberOfSiblings" [(ngModel)]="selectedOrphan.familyInformation.numberOfSiblings"></p-inputNumber>
+        </div>
+        <div class="field">
+          <label for="guardianName">Guardian's Name</label>
+          <input id="guardianName" type="text" pInputText [(ngModel)]="selectedOrphan.familyInformation.guardianName" />
+        </div>
+        <div class="field">
+          <label for="relationToOrphan">Relation to Orphan</label>
+          <input id="relationToOrphan" type="text" pInputText [(ngModel)]="selectedOrphan.familyInformation.relationToOrphan" />
+        </div>
+        <div class="field">
+          <label for="livingCondition">Living Condition</label>
+          <textarea id="livingCondition" pInputTextarea [(ngModel)]="selectedOrphan.familyInformation.livingCondition"></textarea>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h3>Education Information</h3>
+        <div class="field">
+          <label for="schoolName">School Name</label>
+          <input id="schoolName" type="text" pInputText [(ngModel)]="selectedOrphan.education.schoolName" />
+        </div>
+        <div class="field">
+          <label for="gradeLevel">Grade Level</label>
+          <input id="gradeLevel" type="text" pInputText [(ngModel)]="selectedOrphan.education.gradeLevel" />
+        </div>
+        <div class="field">
+          <label for="favoriteSubject">Favorite Subject</label>
+          <input id="favoriteSubject" type="text" pInputText [(ngModel)]="selectedOrphan.education.favoriteSubject" />
+        </div>
+        <div class="field">
+          <label for="educationNeeds">Education Needs</label>
+          <textarea id="educationNeeds" pInputTextarea [(ngModel)]="selectedOrphan.education.educationNeeds"></textarea>
+        </div>
+        <div class="field">
+          <label for="schoolPerformance">School Performance</label>
+          <input id="schoolPerformance" type="text" pInputText [(ngModel)]="selectedOrphan.education.schoolPerformance" />
+        </div>
+        <div class="field">
+          <label for="orphanDream">Orphan's Dream</label>
+          <textarea id="orphanDream" pInputTextarea [(ngModel)]="selectedOrphan.education.orphanDream"></textarea>
+        </div>
+        <div class="field">
+          <label for="favoriteHobbies">Favorite Hobbies</label>
+          <textarea id="favoriteHobbies" pInputTextarea [(ngModel)]="selectedOrphan.education.favoriteHobbies"></textarea>
+        </div>
+        <div class="field">
+          <label for="supervisorComments">Supervisor Comments</label>
+          <textarea id="supervisorComments" pInputTextarea [(ngModel)]="selectedOrphan.education.supervisorComments"></textarea>
+        </div>
+      </div>
+
+      <div class="field photo-upload-field">
+        <label for="photo">Profile Picture</label>
+        <div class="upload-container">
+          <div class="preview-container" [class.has-image]="photoPreview">
+            <img *ngIf="photoPreview" [src]="photoPreview" alt="Preview" class="preview-image"/>
+            <i *ngIf="!photoPreview" class="pi pi-user preview-placeholder"></i>
+          </div>
+          <div class="upload-actions">
+            <label for="photo" class="upload-button">
+              <i class="pi pi-upload"></i>
+              <span>Choose Image</span>
+            </label>
+            <input type="file" id="photo" (change)="onFileSelected($event)" class="file-input" accept="image/*"/>
+            <small class="upload-hint">Recommended: Square image, max 5MB</small>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <ng-template pTemplate="footer">
+      <button pButton label="Cancel" (click)="hideDialog()" class="p-button-secondary btn-action"></button>
+      <button pButton label="Save" (click)="saveOrphan()" class="p-button-success btn-action"></button>
+    </ng-template>
+  </p-dialog>
+
+  <p-dialog 
+    [(visible)]="showPhotoDialog" 
+    [modal]="true"
+    [style]="{width: '50vw'}"
+    [closable]="true"
+    [closeOnEscape]="true"
+    [dismissableMask]="true">
+    <ng-template pTemplate="header">
+      <div class="dialog-header">
+        <h2>View Photo</h2>
+      </div>
+    </ng-template>
+    <div class="photo-preview-container">
+      <img [src]="selectedPhotoUrl" alt="Orphan photo preview" class="preview-photo"/>
+    </div>
+  </p-dialog>
+</div>
+
+<style>
+  .orphan-container {
+    padding: 2rem;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  }
+
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+  }
+
+  .title h2 {
+    color: #2c3e50;
+    font-size: 2rem;
+    font-weight: 600;
+    margin: 0;
+    padding-bottom: 0.5rem;
+    border-bottom: 3px solid #4CAF50;
+    display: inline-block;
+  }
+
+  .header-buttons {
+    display: flex;
+    gap: 1rem;
+  }
+
+  .filters-card {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    border: 1px solid #e9ecef;
+  }
+
+  .filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .input-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #6c757d;
+    font-size: 0.9rem;
+  }
+
+  .input-label i {
+    color: #4CAF50;
+    font-size: 1rem;
+  }
+
+  :host ::ng-deep {
+    .p-inputtext,
+    .p-dropdown,
+    .p-inputnumber-input {
+      height: 40px;
+      padding: 0.5rem 0.75rem;
+      border-radius: 8px;
+      border: 1px solid #e0e0e0;
+      background: #ffffff;
+      font-size: 0.9rem;
+      transition: all 0.2s;
+
+      &:hover {
+        border-color: #4CAF50;
+      }
+
+      &:focus {
+        border-color: #4CAF50;
+        box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.1);
+      }
+    }
+
+    .p-dropdown {
+      width: 100%;
+      
+      .p-dropdown-label {
+        padding: 0.5rem 0.75rem;
+      }
+    }
+
+    .slim-spinner {
+      .p-inputnumber-button {
+        width: 2rem;
+        height: 40px;
+        color: #4CAF50;
+        background: transparent;
+        border: none;
+
+        &:hover {
+          background: #e8f5e9;
+          color: #2e7d32;
+        }
+
+        .pi {
+          font-size: 0.8rem;
+        }
+      }
+
+      .p-inputnumber-input {
+        border-radius: 0;
+        text-align: center !important;
+      }
+    }
+
+    .p-button.p-button-outlined {
+      height: 40px;
+      border-color: #e0e0e0;
+      color: #6c757d;
+
+      &:hover {
+        background: #f8f9fa;
+        border-color: #6c757d;
+        color: #495057;
+      }
+
+      .pi {
+        font-size: 0.9rem;
+      }
+    }
+
+    .country-dropdown {
+      .p-dropdown {
+        background: #ffffff;
+        border: 1px solid #e6f4ff;
+        border-radius: 8px;
+        height: 40px;
+        transition: all 0.2s;
+
+        &:hover {
+          border-color: #1677ff;
+          background: #ffffff;
+        }
+
+        &:not(.p-disabled).p-focus {
+          border-color: #1677ff;
+          box-shadow: 0 0 0 2px rgba(22, 119, 255, 0.2);
+        }
+
+        .p-dropdown-label {
+          padding: 0.5rem 0.75rem;
+          color: #000000;
+          font-size: 0.9rem;
+
+          &.p-placeholder {
+            color: #bfbfbf;
+          }
+        }
+
+        .p-dropdown-trigger {
+          width: 2.5rem;
+          padding-right: 0.5rem;
+
+          .p-dropdown-trigger-icon {
+            color: #595959;
+            font-size: 0.8rem;
+          }
+        }
+      }
+
+      .p-dropdown-panel {
+        border: none;
+        border-radius: 8px;
+        margin-top: 4px;
+        box-shadow: 0 6px 16px 0 rgba(0, 0, 0, 0.08);
+
+        .p-dropdown-items {
+          padding: 4px 0;
+
+          .p-dropdown-item {
+            margin: 0 4px;
+            padding: 0.5rem 0.75rem;
+            border-radius: 4px;
+            color: #000000;
+            font-size: 0.9rem;
+
+            &:hover {
+              background: #f0f5ff;
+              color: #1677ff;
+            }
+
+            &.p-highlight {
+              background: #e6f4ff;
+              color: #1677ff;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  /* Calendar overlay styling */
+  :host ::ng-deep .calendar-overlay {
+    width: 100%;
+  }
+
+  :host ::ng-deep .p-datepicker {
+    position: fixed !important;
+    z-index: 9999 !important;
+  }
+
+  :host ::ng-deep .p-datepicker-panel {
+    background: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  @media screen and (max-width: 1200px) {
+    .filters {
+      flex-direction: column;
+    }
+  }
+
+  @media screen and (max-width: 768px) {
+    .orphan-container {
+      padding: 1rem;
+    }
+
+    .header {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 1rem;
+    }
+
+    .header-buttons {
+      flex-direction: column;
+    }
+  }
+
+  :host ::ng-deep .p-dialog {
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+
+  :host ::ng-deep .p-dialog-content {
+    overflow-y: auto;
+  }
+
+  .photo-preview-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem;
+  }
+
+  .preview-photo {
+    max-width: 100%;
+    max-height: 80vh;
+    object-fit: contain;
+  }
+
+  /* Ensure dialog overlay covers the entire screen */
+  :host ::ng-deep .p-dialog-mask {
+    background-color: rgba(0, 0, 0, 0.4);
+  }
+
+  /* Add some spacing in the form */
+  .orphan-form {
+    padding: 1rem;
+  }
+
+  .form-section {
+    margin-bottom: 2rem;
+  }
+
+  .field {
+    margin-bottom: 1rem;
+  }
+</style>

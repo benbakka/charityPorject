@@ -1,0 +1,127 @@
+<div class="dashboard-container">
+  <div class="content-container">
+    <!-- Header Section -->
+    <div class="dashboard-header">
+      <div class="header-left">
+        <h2>Dashboard Overview</h2>
+      </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="stats-grid">
+      <mat-card class="stat-card">
+        <mat-card-content>
+          <div class="stat-icon"><mat-icon>volunteer_activism</mat-icon></div>
+          <div class="stat-info">
+            <h3>Total Projects</h3>
+            <p class="stat-number">{{statistics.totalProjects}}</p>
+            <!-- <div class="stat-breakdown">
+              <span class="active">{{statistics.activeProjects}} Active</span>
+              <span class="completed">{{statistics.completedProjects}} Completed</span>
+              <span class="pending">{{statistics.pendingProjects}} Pending</span>
+            </div> -->
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="stat-card">
+        <mat-card-content>
+          <div class="stat-icon"><mat-icon>monetization_on</mat-icon></div>
+          <div class="stat-info">
+            <h3>Total Donations</h3>
+            <p class="stat-number">${{statistics.totalDonations.toLocaleString()}}</p>
+            <!-- <p class="stat-growth">+{{statistics.monthlyDonationGrowth}}% this month</p> -->
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="stat-card">
+        <mat-card-content>
+          <div class="stat-icon"><mat-icon>people</mat-icon></div>
+          <div class="stat-info">
+            <h3>Total Donors</h3>
+            <p class="stat-number">{{statistics.totalDonors}}</p>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="stat-card">
+        <mat-card-content>
+          <div class="stat-icon"><mat-icon>child_care</mat-icon></div>
+          <div class="stat-info">
+            <h3>Registered Orphans</h3>
+            <p class="stat-number">{{statistics.registeredOrphans}}</p>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- Charts Section -->
+    <div class="charts-section">
+      <div class="chart-row">
+        <!-- Donations Over Time Chart -->
+        <div class="col-12 lg:col-6">
+          <div class="card">
+            <div class="flex justify-content-between mb-3">
+              <div>
+                <h5>Donations Over Time</h5>
+                <p-dropdown [ngModel]="selectedYear" [options]="availableYears" (ngModelChange)="onYearChange($event)"
+                  [style]="{'width': '100px'}" optionLabel="label" optionValue="value">
+                </p-dropdown>
+              </div>
+            </div>
+            <p-chart type="line" [data]="donationsChartData" [options]="donationsChartOptions"
+              *ngIf="!isLoading && !error">
+            </p-chart>
+            <div *ngIf="isLoading" class="flex justify-content-center">
+              <p-progressSpinner></p-progressSpinner>
+            </div>
+            <div *ngIf="error" class="p-error">
+              {{ error }}
+            </div>
+          </div>
+        </div>
+        <!-- Static Gender Distribution -->
+        <div class="col-12 lg:col-6">
+          <mat-card class="chart-card">
+            <mat-card-header>
+              <mat-card-title>Gender Distribution</mat-card-title>
+            </mat-card-header>
+            <mat-card-content style="height: 300px;">
+              <p-chart 
+                type="pie" 
+                [data]="genderChartData" 
+                [options]="genderChartOptions"
+                [style]="{'width': '100%', 'height': '100%'}">
+              </p-chart>
+            </mat-card-content>
+          </mat-card>
+        </div>
+
+      </div>
+
+      <div class="chart-row">
+        <!-- Top Donors Chart -->
+        <div class="col-12">
+          <mat-card class="chart-card">
+            <mat-card-header>
+              <mat-card-title>Top 5 Donors</mat-card-title>
+            </mat-card-header>
+            <mat-card-content style="height: 300px;">
+              <p-chart 
+                type="bar" 
+                [data]="topDonorsChartData" 
+                [options]="topDonorsChartOptions"
+                [style]="{'width': '100%', 'height': '100%'}"
+                *ngIf="topDonorsChartData">
+              </p-chart>
+              <div *ngIf="!topDonorsChartData" class="flex justify-content-center align-items-center h-full">
+                <p-progressSpinner></p-progressSpinner>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,59 @@
+/* PrimeNG CSS */
+@import "primeng/resources/themes/lara-light-blue/theme.css";
+@import "primeng/resources/primeng.css";
+@import "primeicons/primeicons.css";
+@import "primeflex/primeflex.css";
+
+/* Import Angular Material theming */
+@import '@angular/material/prebuilt-themes/indigo-pink.css';
+
+/* Add Material Icons font */
+@import url('https://fonts.googleapis.com/icon?family=Material+Icons');
+
+/* Global styles */
+:root {
+  --primary-color: #2196F3;
+  --secondary-color: #607D8B;
+  --success-color: #4CAF50;
+  --warning-color: #FFC107;
+  --danger-color: #F44336;
+  --surface-ground: #f8f9fa;
+  --surface-card: #ffffff;
+  --surface-border: #dee2e6;
+  --text-color: #495057;
+  --text-color-secondary: #6c757d;
+}
+
+/* Global Material styles */
+html, body {
+  height: 100%;
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+body {
+  font-family: var(--font-family);
+  margin: 0;
+  padding: 0;
+  background-color: var(--surface-ground);
+  color: var(--text-color);
+}
+
+.card {
+  background: var(--surface-card);
+  padding: 2rem;
+  border-radius: 10px;
+  margin-bottom: 1rem;
+  box-shadow: 0 2px 1px -1px rgba(0,0,0,.2), 0 1px 1px 0 rgba(0,0,0,.14), 0 1px 3px 0 rgba(0,0,0,.12);
+}
+
+.section-title {
+  color: var(--text-color);
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.p-component {
+  font-family: var(--font-family);
+}

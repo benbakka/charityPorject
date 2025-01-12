@@ -1,0 +1,46 @@
+<div class="login-container">
+  <div class="login-card">
+    <h2>Admin Login</h2>
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+      <div class="form-group">
+        <label for="username">Username</label>
+        <input
+          type="text"
+          id="username"
+          formControlName="username"
+          class="form-control"
+          placeholder="Enter username"
+        >
+      </div>
+      
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input
+          type="password"
+          id="password"
+          formControlName="password"
+          class="form-control"
+          placeholder="Enter password"
+        >
+      </div>
+
+      <div class="error-message" *ngIf="error">
+        {{ error }}
+      </div>
+
+      <button
+        type="submit"
+        [disabled]="!loginForm.valid"
+        class="btn-login"
+      >
+        Login
+      </button>
+
+      <div class="default-credentials">
+        <p><small>Default credentials (for testing):</small></p>
+        <p><small>Username: admin</small></p>
+        <p><small>Password: admin123</small></p>
+      </div>
+    </form>
+  </div>
+</div>
