@@ -45,8 +45,7 @@
             ],
             "scripts": [],
             "styles": [
-              "src/global_styles.css",
-              "src/styles.css"
+              "src/global_styles.css"
             ],
             "tsConfig": "tsconfig.app.json"
           }
