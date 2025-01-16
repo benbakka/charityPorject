@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-menu',
@@ -69,6 +70,17 @@ import { CommonModule } from '@angular/common';
                 <a class="nav-link" routerLink="/OrphanCards" routerLinkActive="active">
                   <i class="pi pi-id-card"></i>
                   <span>Orphan Cards</span>
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="nav-section logout-section">
+            <ul class="nav-list">
+              <li class="nav-item">
+                <a class="nav-link logout-link" (click)="logout()">
+                  <i class="pi pi-sign-out"></i>
+                  <span>Logout</span>
                 </a>
               </li>
             </ul>
@@ -152,6 +164,7 @@ import { CommonModule } from '@angular/common';
       text-decoration: none;
       border-radius: 8px;
       transition: all 0.3s ease;
+      cursor: pointer;
     }
 
     .nav-link:hover {
@@ -181,7 +194,26 @@ import { CommonModule } from '@angular/common';
       background: #f8f9fa;
       overflow-y: auto;
     }
+
+    .logout-section {
+      margin-top: auto;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      padding-top: 1rem;
+    }
+
+    .logout-link {
+      color: #ff6b6b;
+    }
+
+    .logout-link:hover {
+      background: rgba(255, 99, 99, 0.1);
+    }
   `]
 })
 export class MenuComponent {
+  constructor(private authService: AuthService) {}
+
+  logout(): void {
+    this.authService.logout();
+  }
 }

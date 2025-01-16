@@ -13,7 +13,6 @@ import { CardModule } from 'primeng/card';
 import { Subscription } from 'rxjs';
 import { DashboardService, DashboardStatistics, ChartData } from '../../services/dashboard.service';
 import { SelectItem } from 'primeng/api';
-import { AuthService } from '../../services/auth.service';
 
 interface YearOption {
   label: string;
@@ -80,8 +79,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   ];
 
   constructor(
-    private dashboardService: DashboardService,
-    private authService: AuthService
+    private dashboardService: DashboardService
   ) {
     // Initialize with static data first
     this.genderChartData = {
@@ -400,10 +398,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
       responsive: true,
       maintainAspectRatio: false
     };
-  }
-
-  logout(): void {
-    this.authService.logout();
   }
 
   retryLoading(): void {
