@@ -82,13 +82,12 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 24px;
+  margin-bottom: 2rem;
 }
 
 .header-left {
   display: flex;
   align-items: center;
-  gap: 16px;
 }
 
 .header-left h1 {
@@ -108,7 +107,16 @@
 .header-right {
   display: flex;
   align-items: center;
-  gap: 8px;
+}
+
+.header-right button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.header-right mat-icon {
+  margin-right: 4px;
 }
 
 /* Statistics Grid */

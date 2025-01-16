@@ -13,6 +13,7 @@ import { CardModule } from 'primeng/card';
 import { Subscription } from 'rxjs';
 import { DashboardService, DashboardStatistics, ChartData } from '../../services/dashboard.service';
 import { SelectItem } from 'primeng/api';
+import { AuthService } from '../../services/auth.service';
 
 interface YearOption {
   label: string;
@@ -78,7 +79,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
     { id: 3, title: 'New Donor Registration', message: 'Sarah Johnson joined as a donor', time: '1 day ago', type: 'donor' }
   ];
 
-  constructor(private dashboardService: DashboardService) {
+  constructor(
+    private dashboardService: DashboardService,
+    private authService: AuthService
+  ) {
     // Initialize with static data first
     this.genderChartData = {
       labels: ['Male', 'Female'],
@@ -396,6 +400,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
       responsive: true,
       maintainAspectRatio: false
     };
+  }
+
+  logout(): void {
+    this.authService.logout();
   }
 
   retryLoading(): void {
