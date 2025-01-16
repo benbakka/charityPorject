@@ -32,6 +32,6 @@ export class CharityProjectService {
   }
 
   deleteAllCharityProjects(): Observable<void> {
-    return this.http.delete<void>(this.apiUrl);
+    return this.http.delete<void>(`${this.apiUrl}/all`);
   }
 }
