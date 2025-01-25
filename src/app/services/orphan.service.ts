@@ -29,7 +29,7 @@ export class OrphanService {
           if (orphan.photo) {
             // Create a URL that includes the auth token
             const token = localStorage.getItem('auth_token');
-            orphan.photo = `http://localhost:8080${orphan.photo}`;
+            orphan.photo = `https://charitybackend.onrender.com${orphan.photo}`;
             // Create blob URL for the image
             this.http.get(orphan.photo, {
               headers: this.getAuthHeaders(),
