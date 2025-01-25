@@ -1,8 +1,6 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
-import { RouterModule } from '@angular/router';
-import { routes } from './app.routes';
+import { HttpClientModule } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule } from '@angular/forms';
 
@@ -18,7 +16,6 @@ import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 
 import { AppComponent } from './app.component';
-import { JwtInterceptor } from './interceptors/jwt.interceptor';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 
 @NgModule({
@@ -30,7 +27,6 @@ import { DashboardComponent } from './components/dashboard/dashboard.component';
     BrowserModule,
     BrowserAnimationsModule,
     HttpClientModule,
-    RouterModule.forRoot(routes),
     FormsModule,
     // PrimeNG Modules
     ChartModule,
@@ -42,9 +38,7 @@ import { DashboardComponent } from './components/dashboard/dashboard.component';
     MatCardModule,
     MatIconModule
   ],
-  providers: [
-    { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true }
-  ],
+  providers: [],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

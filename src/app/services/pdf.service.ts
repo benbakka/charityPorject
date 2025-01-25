@@ -1,16 +1,17 @@
 import { Injectable } from '@angular/core';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
-import { User } from '../models/user.model';
-import { firstValueFrom } from 'rxjs';
-import { UserService } from '../services/user.service';
+import  { User } from '../models/user.model';
+import { firstValueFrom, Observable } from 'rxjs';
+// import { UserService } from '../services/user.service';
 import { OrphanIDCard } from '../models/orphan-idcard';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PdfService {
-  constructor(private imageProxyService: UserService) {}
+  http: any;
+  // constructor(private imageProxyService: UserService) {}
 
   private async loadImage(src: string): Promise<HTMLImageElement> {
     return new Promise((resolve, reject) => {
@@ -31,7 +32,7 @@ export class PdfService {
         } else {
           try {
             const proxiedImageResponse = await firstValueFrom(
-              this.imageProxyService.getProxiedImage(orphan.photo)
+              this.getProxiedImage(orphan.photo)
             );
             imgElement.src = proxiedImageResponse.data;
           } catch (error) {
@@ -97,7 +98,7 @@ export class PdfService {
         } else {
           try {
             const proxiedImageResponse = await firstValueFrom(
-              this.imageProxyService.getProxiedImage(orphan.photo)
+              this.getProxiedImage(orphan.photo)
             );
             imgElement.src = proxiedImageResponse.data;
           } catch (error) {
@@ -151,5 +152,9 @@ export class PdfService {
       console.error('Error generating PDF:', error);
       throw new Error('Failed to generate PDF. Please make sure all images are accessible and try again.');
     }
+  }
+
+  getProxiedImage(imageUrl: string): Observable<any> {
+    return this.http.post('https://charitybackend.onrender.com/api/proxy/image', { url: imageUrl });
   }
 }

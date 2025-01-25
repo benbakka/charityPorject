@@ -4,45 +4,50 @@ import {
   HttpHandler,
   HttpEvent,
   HttpInterceptor,
-  HttpErrorResponse
+  HttpErrorResponse,
+  HttpInterceptorFn
 } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { AuthService } from '../services/auth.service';
+import { inject } from '@angular/core';
 import { Router } from '@angular/router';
+import { AuthService } from '../services/auth.service';
 
-@Injectable()
-export class JwtInterceptor implements HttpInterceptor {
-  constructor(
-    private authService: AuthService,
-    private router: Router
-  ) {}
+export const jwtInterceptor: HttpInterceptorFn = (req, next) => {
+  const authService = inject(AuthService);
+  const router = inject(Router);
 
-  intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
-    // Don't add token for auth endpoints
-    if (request.url.includes('/api/auth/')) {
-      return next.handle(request);
-    }
+  // Don't add token for auth endpoints
+  if (req.url.includes('/api/auth/')) {
+    return next(req);
+  }
 
-    const token = this.authService.getToken();
-    
-    if (token) {
-      request = request.clone({
-        setHeaders: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-    }
-    
-    return next.handle(request).pipe(
-      catchError((error: HttpErrorResponse) => {
+  const token = localStorage.getItem('auth_token');
+  
+  if (token) {
+    const cloned = req.clone({
+      headers: req.headers.set('Authorization', `Bearer ${token}`)
+    });
+    return next(cloned).pipe(
+      catchError((error) => {
         if (error.status === 401) {
           // Token expired or invalid
-          this.authService.logout();
-          this.router.navigate(['/login']);
+          authService.logout();
+          router.navigate(['/login']);
         }
         return throwError(() => error);
       })
     );
   }
-}
+  
+  return next(req).pipe(
+    catchError((error) => {
+      if (error.status === 401) {
+        // Token expired or invalid
+        authService.logout();
+        router.navigate(['/login']);
+      }
+      return throwError(() => error);
+    })
+  );
+};

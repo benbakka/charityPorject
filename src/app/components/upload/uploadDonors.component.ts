@@ -3,17 +3,17 @@ import { CommonModule } from '@angular/common';
 import { FileUploadModule } from 'primeng/fileupload';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
-import { OrphanService } from '../../services/orphan.service';
+import { DonorService } from '../../services/donor.service';
 import { Router } from '@angular/router';
 
 @Component({
-  selector: 'app-upload',
+  selector: 'app-upload-donors',
   standalone: true,
   imports: [CommonModule, FileUploadModule, ToastModule],
   providers: [MessageService],
   template: `
     <div class="upload-container">
-      <h2>Upload Excel File for Orphans</h2>
+      <h2>Upload Excel File for Donors</h2>
       <p-fileUpload
         [customUpload]="true"
         (uploadHandler)="onUpload($event)"
@@ -34,16 +34,17 @@ import { Router } from '@angular/router';
     }
   `]
 })
-export class UploadComponent {
+export class UploadDonorsComponent {
   constructor(
+    // private userService: UserService,
     private router: Router,
-    private orphanService: OrphanService,
+    private donorService: DonorService,
     private messageService: MessageService
   ) {}
 
   onUpload(event: any) {
     const file = event.files[0];
-    this.orphanService.uploadExcel(file).subscribe({
+    this.donorService.uploadExcel(file).subscribe({
       next: () => {
         this.messageService.add({
           severity: 'success',
@@ -51,7 +52,7 @@ export class UploadComponent {
           detail: 'File uploaded successfully'
         });
         setTimeout(() => {
-          this.router.navigate(['/orphans']).then(() => {
+          this.router.navigate(['/donors']).then(() => {
             console.log('Navigation completed');
           }).catch(err => {
             console.error('Navigation failed:', err);

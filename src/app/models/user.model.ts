@@ -1,10 +1,7 @@
 export interface User {
-  id?: number;
-  userId: string;
-  name: string;
-  age: number;
-  photo: string;
-  grade: string;
-  address: string;
-  country: string;
+  id: number; // Optional: Use this if the backend includes an ID field
+  username: string;
+  email: string;
+  password?: string; // Optional: Include this only when creating/updating users
+  role: string; // e.g., "USER", "ADMIN"
 }

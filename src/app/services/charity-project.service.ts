@@ -7,6 +7,7 @@ import { CharityProject } from '../models/charity-project';
   providedIn: 'root'
 })
 export class CharityProjectService {
+  // private apiUrl = 'https://charitybackend.onrender.com/api/charity-projects';
   private apiUrl = 'https://charitybackend.onrender.com/api/charity-projects';
 
   constructor(private http: HttpClient) { }
@@ -33,5 +34,11 @@ export class CharityProjectService {
 
   deleteAllCharityProjects(): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/all`);
+  }
+  
+  uploadExcel(file: File): Observable<any> {
+    const formData = new FormData();
+    formData.append('file', file);
+    return this.http.post(`${this.apiUrl}/upload`, formData);
   }
 }

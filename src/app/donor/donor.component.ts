@@ -12,6 +12,15 @@ import { ConfirmationService } from 'primeng/api';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { Donor } from '../models/donor';
 import { DonorService } from '../services/donor.service';
+import { Router } from '@angular/router';
+import { TooltipModule } from 'primeng/tooltip';
+import { DonationService } from '../services/donation.service';
+
+interface DonationHistory {
+  amount: number;
+  dateDonation: string;
+  charityProjectName: string;
+}
 
 @Component({
   selector: 'app-donor',
@@ -25,7 +34,8 @@ import { DonorService } from '../services/donor.service';
     InputTextModule,
     ToastModule,
     ConfirmDialogModule,
-    InputNumberModule
+    InputNumberModule,
+    TooltipModule
   ],
   providers: [MessageService, ConfirmationService],
   styles: [`
@@ -414,6 +424,66 @@ import { DonorService } from '../services/donor.service';
       border-color: #22C55E !important;
       box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.2) !important;
     }
+
+    .action-btn {
+      margin-right: 0.5rem;
+    }
+
+    .action-btn:last-child {
+      margin-right: 0;
+    }
+
+    .p-button-info {
+      background: #2196F3;
+      border-color: #2196F3;
+    }
+
+    .p-button-info:hover {
+      background: #1976D2;
+      border-color: #1976D2;
+    }
+
+    .donation-history-container {
+      padding: 1rem;
+    }
+
+    .donor-info {
+      margin-bottom: 1.5rem;
+      padding: 1rem;
+      background-color: #f8f9fa;
+      border-radius: 8px;
+    }
+
+    .donor-info h3 {
+      margin: 0;
+      color: #2196F3;
+    }
+
+    .donation-table {
+      margin-top: 1rem;
+    }
+
+    :host ::ng-deep .p-datatable {
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    :host ::ng-deep .p-datatable .p-datatable-header {
+      background: #f8f9fa;
+    }
+
+    :host ::ng-deep .p-datatable .p-datatable-thead > tr > th {
+      background: #f8f9fa;
+      color: #495057;
+      font-weight: 600;
+    }
+
+    :host ::ng-deep .p-datatable .p-datatable-tbody > tr:nth-child(even) {
+      background: #fafafa;
+    }
+
+    .text-center {
+      text-align: center;
+    }
   `],
   template: `
     <div class="donor-container">
@@ -461,14 +531,19 @@ import { DonorService } from '../services/donor.service';
       </div>
 
       <div class="donor-table">
-        <p-table [value]="filteredDonors" 
+        <p-table [value]="donors" 
                  [tableStyle]="{'min-width': '50rem'}"
                  [paginator]="true" 
                  [rows]="10" 
                  [showCurrentPageReport]="false"
-                 styleClass="donor-table">
+                 styleClass="donor-table"
+                 selectionMode="single"
+                 [selection]="selectedDonor"
+                 (selectionChange)="selectedDonor = $event"
+                 (onRowSelect)="onRowClick($event)">
           <ng-template pTemplate="header">
             <tr>
+              <th>ID</th>
               <th>Name</th>
               <th>Email</th>
               <th>Phone</th>
@@ -479,6 +554,7 @@ import { DonorService } from '../services/donor.service';
           </ng-template>
           <ng-template pTemplate="body" let-donor>
             <tr>
+              <td>{{donor.id}}</td>
               <td>{{donor.name}}</td>
               <td>{{donor.email}}</td>
               <td>{{donor.phone}}</td>
@@ -496,73 +572,78 @@ import { DonorService } from '../services/donor.service';
                           class="action-btn p-button-rounded p-button-danger"
                           (click)="deleteDonor(donor)">
                   </button>
+                  <button pButton 
+                          icon="pi pi-history" 
+                          class="action-btn p-button-rounded p-button-info"
+                          (click)="viewDonationHistory(donor)" pTooltip="View Donation History">
+                  </button>
                 </div>
               </td>
             </tr>
           </ng-template>
         </p-table>
       </div>
+
+      <p-dialog [(visible)]="donorDialog" 
+                [modal]="true" 
+                [style]="{width: '80vw'}" 
+                [maximizable]="true"
+                [closable]="true"
+                [closeOnEscape]="true"
+                [dismissableMask]="true">
+        <ng-template pTemplate="header">
+          <div class="dialog-header">
+            <h2>{{ donor.id ? 'Edit Donor' : 'Add New Donor' }}</h2>
+          </div>
+        </ng-template>
+        <div class="donor-form">
+          <div class="form-section">
+            <h3>Donor Information</h3>
+            <div class="field">
+              <label for="name">Name</label>
+              <input type="text" pInputText id="name" [(ngModel)]="donor.name" required autofocus />
+            </div>
+            <div class="field">
+              <label for="email">Email</label>
+              <input type="email" pInputText id="email" [(ngModel)]="donor.email" required />
+            </div>
+            <div class="field">
+              <label for="phone">Phone</label>
+              <input type="tel" pInputText id="phone" [(ngModel)]="donor.phone" required />
+            </div>
+            <div class="field">
+              <label for="company">Company</label>
+              <input type="text" pInputText id="company" [(ngModel)]="donor.company" />
+            </div>
+          </div>
+
+          <div class="form-section">
+            <h3>Address Information</h3>
+            <div class="field">
+              <label for="address">Address</label>
+              <input type="text" pInputText id="address" [(ngModel)]="donor.address" />
+            </div>
+            <div class="field">
+              <label for="city">City</label>
+              <input type="text" pInputText id="city" [(ngModel)]="donor.city" />
+            </div>
+            <div class="field">
+              <label for="state">State</label>
+              <input type="text" pInputText id="state" [(ngModel)]="donor.state" />
+            </div>
+            <div class="field">
+              <label for="zip">ZIP Code</label>
+              <input type="text" pInputText id="zip" [(ngModel)]="donor.zip" />
+            </div>
+          </div>
+        </div>
+
+        <ng-template pTemplate="footer">
+          <button pButton label="Cancel" (click)="hideDialog()" class="p-button-secondary btn-action"></button>
+          <button pButton label="Save" (click)="saveDonor()" class="p-button-success btn-action"></button>
+        </ng-template>
+      </p-dialog>
     </div>
-
-    <p-dialog [(visible)]="donorDialog" 
-              [modal]="true" 
-              [style]="{width: '80vw'}" 
-              [maximizable]="true"
-              [closable]="true"
-              [closeOnEscape]="true"
-              [dismissableMask]="true">
-      <ng-template pTemplate="header">
-        <div class="dialog-header">
-          <h2>{{ donor.id ? 'Edit Donor' : 'Add New Donor' }}</h2>
-        </div>
-      </ng-template>
-      <div class="donor-form">
-        <div class="form-section">
-          <h3>Donor Information</h3>
-          <div class="field">
-            <label for="name">Name</label>
-            <input type="text" pInputText id="name" [(ngModel)]="donor.name" required autofocus />
-          </div>
-          <div class="field">
-            <label for="email">Email</label>
-            <input type="email" pInputText id="email" [(ngModel)]="donor.email" required />
-          </div>
-          <div class="field">
-            <label for="phone">Phone</label>
-            <input type="tel" pInputText id="phone" [(ngModel)]="donor.phone" required />
-          </div>
-          <div class="field">
-            <label for="company">Company</label>
-            <input type="text" pInputText id="company" [(ngModel)]="donor.company" />
-          </div>
-        </div>
-
-        <div class="form-section">
-          <h3>Address Information</h3>
-          <div class="field">
-            <label for="address">Address</label>
-            <input type="text" pInputText id="address" [(ngModel)]="donor.address" />
-          </div>
-          <div class="field">
-            <label for="city">City</label>
-            <input type="text" pInputText id="city" [(ngModel)]="donor.city" />
-          </div>
-          <div class="field">
-            <label for="state">State</label>
-            <input type="text" pInputText id="state" [(ngModel)]="donor.state" />
-          </div>
-          <div class="field">
-            <label for="zip">ZIP Code</label>
-            <input type="text" pInputText id="zip" [(ngModel)]="donor.zip" />
-          </div>
-        </div>
-      </div>
-
-      <ng-template pTemplate="footer">
-        <button pButton label="Cancel" (click)="hideDialog()" class="p-button-secondary btn-action"></button>
-        <button pButton label="Save" (click)="saveDonor()" class="p-button-success btn-action"></button>
-      </ng-template>
-    </p-dialog>
   `,
 })
 export class DonorComponent implements OnInit {
@@ -581,11 +662,15 @@ export class DonorComponent implements OnInit {
   donorDialog: boolean = false;
   submitted: boolean = false;
   nameFilter: string = '';
+  selectedDonor: Donor | null = null;
+  loadingDonations = false;
 
   constructor(
     private donorService: DonorService,
+    private donationService: DonationService,
     private messageService: MessageService,
-    private confirmationService: ConfirmationService
+    private confirmationService: ConfirmationService,
+    private router: Router
   ) {}
 
   ngOnInit() {
@@ -751,6 +836,24 @@ export class DonorComponent implements OnInit {
           }
         });
       }
+    }
+  }
+
+  onRowClick(event: any) {
+    if (event.data && event.data.id) {
+      this.router.navigate(['/donors', event.data.id, 'history']);
+    }
+  }
+
+  viewDonationHistory(donor: Donor) {
+    if (donor.id !== undefined) {
+      this.router.navigate(['/donors', donor.id, 'history']);
+    } else {
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Error',
+        detail: 'Invalid donor ID'
+      });
     }
   }
 

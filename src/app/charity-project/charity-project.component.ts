@@ -111,12 +111,12 @@ import { DonorService } from '../services/donor.service';
     }
 
     .input-field:hover,
-.select-field:hover,
-:host ::ng-deep .p-dropdown:hover,
-:host ::ng-deep .p-inputnumber input:hover {
-  border-color: #4CAF50;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
+    .select-field:hover,
+    :host ::ng-deep .p-dropdown:hover,
+    :host ::ng-deep .p-inputnumber input:hover {
+      border-color: #4CAF50;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
 
     .filter-item input:hover,
     .filter-item .p-dropdown:hover,
@@ -476,32 +476,6 @@ import { DonorService } from '../services/donor.service';
                    placeholder="Search by name...">
           </div>
 
-          <div class="filter-item">
-            <label>
-              <i class="pi pi-tag"></i>
-              Status
-            </label>
-            <p-dropdown [options]="statusOptions" 
-                       [(ngModel)]="statusFilter"
-                       (onChange)="applyFilters()"
-                       placeholder="Select status"
-                       [showClear]="true">
-            </p-dropdown>
-          </div>
-
-          <div class="filter-item">
-            <label>
-              <i class="pi pi-dollar"></i>
-              Target Amount
-            </label>
-            <p-inputNumber [(ngModel)]="targetAmountFilter"
-                          (onInput)="applyFilters()"
-                          mode="currency" 
-                          currency="USD"
-                          placeholder="Enter amount">
-            </p-inputNumber>
-          </div>
-
           <button class="btn-clear-filters"
                   (click)="clearFilters()">
             <i class="pi pi-filter-slash"></i>
@@ -517,32 +491,16 @@ import { DonorService } from '../services/donor.service';
                  styleClass="p-datatable-card">
           <ng-template pTemplate="header">
             <tr>
+              <th>ID</th>
               <th>Name</th>
-              <th>Date</th>
-              <th>Location</th>
-              <th>Goal</th>
-              <th>Budget</th>
-              <th>Status</th>
               <th>Actions</th>
             </tr>
           </ng-template>
           <ng-template pTemplate="body" let-project>
             <tr>
+              <td>{{project.id}}</td>
               <td>{{project.name}}</td>
-              <td>{{project.date | date:'mediumDate'}}</td>
-              <td>{{project.location}}</td>
-              <td>{{project.goal}}</td>
-              <td>{{project.budget | currency}}</td>
-              <td>
-                <span class="status-badge" [ngClass]="{
-                  'status-active': project.status === 'Active',
-                  'status-completed': project.status === 'Completed',
-                  'status-on-hold': project.status === 'On Hold',
-                  'status-cancelled': project.status === 'Cancelled'
-                }">
-                  {{ project.status }}
-                </span>
-              </td>
+             
               <td>
                 <div class="action-buttons">
                   <button pButton icon="pi pi-pencil" class="p-button-rounded p-button-success action-btn" (click)="editProject(project)"></button>
@@ -572,39 +530,8 @@ import { DonorService } from '../services/donor.service';
             <label for="name">Project Name</label>
             <input type="text" pInputText id="name" [(ngModel)]="project.name" required autofocus />
           </div>
-          <div class="field">
-            <label for="date">Project Date</label>
-            <p-calendar [(ngModel)]="project.date"
-                       appendTo="body"
-                       [showIcon]="true"
-                       [style]="{'width':'100%', 'max-width': '400px'}"
-                       dateFormat="dd/mm/yy">
-            </p-calendar>
-          </div>
-          <div class="field">
-            <label for="location">Location</label>
-            <input type="text" pInputText id="location" [(ngModel)]="project.location" required />
-          </div>
-          <div class="field">
-            <label for="goal">Project Goal</label>
-            <textarea pInputTextarea id="goal" [(ngModel)]="project.goal" rows="3"></textarea>
-          </div>
-          <div class="field">
-            <label for="budget">Budget</label>
-            <p-inputNumber id="budget" [(ngModel)]="project.budget" mode="currency" currency="USD"></p-inputNumber>
-          </div>
-          <div class="field">
-            <label for="status">Status</label>
-            <p-dropdown id="status"
-                      [(ngModel)]="project.status"
-                      [options]="statuses"
-                      optionLabel="label"
-                      optionValue="value"
-                      appendTo="body"
-                      [style]="{'width':'100%', 'max-width': '400px'}"
-                      placeholder="Select a Status">
-            </p-dropdown>
-          </div>
+       
+      
         </div>
       </div>
 
@@ -622,21 +549,7 @@ export class CharityProjectComponent implements OnInit {
   filteredProjects: CharityProject[] = [];
   project: CharityProject = this.getEmptyProject();
   submitted: boolean = false;
-  statuses: any[] = [
-    { label: 'Active', value: 'Active' },
-    { label: 'Completed', value: 'Completed' },
-    { label: 'On Hold', value: 'On Hold' },
-    { label: 'Cancelled', value: 'Cancelled' }
-  ];
-  statusOptions = [
-    { label: 'Active', value: 'Active' },
-    { label: 'Completed', value: 'Completed' },
-    { label: 'On Hold', value: 'On Hold' },
-    { label: 'Cancelled', value: 'Cancelled' }
-  ];
   nameFilter: string = '';
-  statusFilter: string | null = null;
-  targetAmountFilter: number | null = null;
 
   constructor(
     private charityProjectService: CharityProjectService,
@@ -653,7 +566,6 @@ export class CharityProjectComponent implements OnInit {
       next: (projects) => {
         this.projects = projects.map(project => ({
           ...project,
-          date: project.date ? new Date(project.date) : new Date()
         }));
         this.applyFilters();
       },
@@ -734,7 +646,6 @@ export class CharityProjectComponent implements OnInit {
 
   editProject(project: CharityProject) {
     this.project = { ...project };
-    this.project.date = new Date(project.date);
     this.projectDialog = true;
   }
 
@@ -795,34 +706,20 @@ export class CharityProjectComponent implements OnInit {
 
   applyFilters() {
     this.filteredProjects = this.projects.filter(project => {
-      const matchesName = !this.nameFilter || 
-        project.name.toLowerCase().includes(this.nameFilter.toLowerCase());
-      
-      const matchesStatus = !this.statusFilter || 
-        project.status === this.statusFilter;
-      
-      const matchesAmount = !this.targetAmountFilter || 
-        project.budget >= this.targetAmountFilter;
+      const matchesName = !this.nameFilter 
 
-      return matchesName && matchesStatus && matchesAmount;
+      return matchesName;
     });
   }
 
   clearFilters() {
     this.nameFilter = '';
-    this.statusFilter = null;
-    this.targetAmountFilter = null;
     this.applyFilters();
   }
 
   private getEmptyProject(): CharityProject {
     return {
       name: '',
-      date: new Date(),
-      location: '',
-      goal: '',
-      budget: 0,
-      status: 'Active'
     };
   }
 }

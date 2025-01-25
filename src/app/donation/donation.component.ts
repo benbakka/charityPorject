@@ -109,6 +109,7 @@ import { Donor } from '../models/donor';
                styleClass="donation-table">
         <ng-template pTemplate="header">
           <tr>
+            <th>ID</th>
             <th>Donor Name</th>
             <th>Project Name</th>
             <th>Amount</th>
@@ -118,6 +119,7 @@ import { Donor } from '../models/donor';
         </ng-template>
         <ng-template pTemplate="body" let-donation>
           <tr>
+            <td>{{donation.id}}</td>
             <td>{{donation.donor.name}}</td>
             <td>{{donation.charityProject.name}}</td>
             <td>{{donation.amount | currency}}</td>
@@ -167,6 +169,16 @@ import { Donor } from '../models/donor';
             <p-inputNumber id="amount" [(ngModel)]="donation.amount" 
                          mode="currency" currency="USD" [min]="0"></p-inputNumber>
             <small class="p-error" *ngIf="submitted && donation.amount <= 0">Amount must be greater than 0.</small>
+          </div>
+          <div class="field">
+              <label for="donationType">Donation Type</label>
+              <p-dropdown 
+                  [(ngModel)]="donation.donationType" 
+                  [options]="[{label: 'One-Time', value: 'one-time'}, {label: 'Monthly', value: 'monthly'}]"
+                  placeholder="Select Donation Type"
+                  [showClear]="true">
+              </p-dropdown>
+              <small class="p-error" *ngIf="submitted && !donation.donationType">Donation type is required.</small>
           </div>
           <div class="field">
             <label for="donationDate">Donation Date</label>
@@ -758,6 +770,7 @@ export class DonationComponent implements OnInit {
   projects: CharityProject[] = [];
   selectedDonor: Donor | null = null;
   selectedProject: CharityProject | null = null;
+  selectedDonationType: string = 'one-time';
   calendarConfig = {
     yearRange: '2020:2030',
     showTime: false,
@@ -1065,7 +1078,8 @@ export class DonationComponent implements OnInit {
       amount: 0,
       dateDonation: new Date(),
       donor: null as any,
-      charityProject: null as any
+      charityProject: null as any,
+      donationType: 'one-time'
     };
   }
 }

@@ -7,10 +7,17 @@ import { Donor } from '../models/donor';
   providedIn: 'root'
 })
 export class DonorService {
+  // private baseUrl = 'https://charitybackend.onrender.com/api/donors';
   private baseUrl = 'https://charitybackend.onrender.com/api/donors';
 
   constructor(private http: HttpClient) {}
 
+  uploadExcel(file: File): Observable<any> {
+    const formData = new FormData();
+    formData.append('file', file);
+    return this.http.post(`${this.baseUrl}/upload`, formData);
+  }
+  
   // Helper method to include Authorization headers
   private getAuthHeaders(): HttpHeaders {
     const token = localStorage.getItem('auth_token'); // Retrieve token from localStorage

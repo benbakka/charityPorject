@@ -16,7 +16,7 @@ import { AuthService } from '../../services/auth.service';
         </div>
         
         <nav class="sidebar-nav">
-          <div class="nav-section">
+          <div class="nav-section" *ngIf="isAdmin">
             <ul class="nav-list">
               <li class="nav-item">
                 <a class="nav-link" routerLink="/dashboard" routerLinkActive="active">
@@ -30,24 +30,38 @@ import { AuthService } from '../../services/auth.service';
           <div class="nav-section">
             <h2 class="nav-title">Management</h2>
             <ul class="nav-list">
+            <li class="nav-item" *ngIf="isAdmin">
+                <a class="nav-link" routerLink="/users" routerLinkActive="active">
+                  <i class="pi pi-users"></i>
+                  <span>Users</span>
+                </a>
+              </li>
               <li class="nav-item">
                 <a class="nav-link" routerLink="/orphans" routerLinkActive="active">
                   <i class="pi pi-user"></i>
                   <span>Orphans</span>
                 </a>
               </li>
-              <li class="nav-item">
-                <a class="nav-link" routerLink="/donors" routerLinkActive="active">
-                  <i class="pi pi-heart-fill"></i>
-                  <span>Donors</span>
+             <li class="nav-item">
+                <a class="nav-link" routerLink="/OrphanCards" routerLinkActive="active">
+                  <i class="pi pi-id-card"></i>
+                  <span>Orphan Cards</span>
                 </a>
               </li>
             </ul>
           </div>
 
-          <div class="nav-section">
+         
+
+          <div class="nav-section" *ngIf="isAdmin">
             <h2 class="nav-title">Projects & Donations</h2>
             <ul class="nav-list">
+             <li class="nav-item">
+                <a class="nav-link" routerLink="/donors" routerLinkActive="active">
+                  <i class="pi pi-heart-fill"></i>
+                  <span>Donors</span>
+                </a>
+              </li>
               <li class="nav-item">
                 <a class="nav-link" routerLink="/charity-projects" routerLinkActive="active">
                   <i class="pi pi-box"></i>
@@ -60,17 +74,46 @@ import { AuthService } from '../../services/auth.service';
                   <span>Donations</span>
                 </a>
               </li>
+
             </ul>
           </div>
 
+        
+
           <div class="nav-section">
-            <h2 class="nav-title">Documents</h2>
+            <h2 class="nav-title">Upload</h2>
             <ul class="nav-list">
-              <li class="nav-item">
-                <a class="nav-link" routerLink="/OrphanCards" routerLinkActive="active">
-                  <i class="pi pi-id-card"></i>
-                  <span>Orphan Cards</span>
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" (click)="toggleUploadDropdown()">
+                  <i class="pi pi-upload"></i>
+                  <span>Uploads</span>
                 </a>
+                <ul class="dropdown-menu" [class.show]="isUploadDropdownOpen">
+                  <li>
+                    <a class="dropdown-item" routerLink="/upload" routerLinkActive="active" (click)="closeUploadDropdown()">
+                      <i class="pi pi-users"></i>
+                      <span>Upload Orphans</span>
+                    </a>
+                  </li>
+                  <li >
+                    <a class="dropdown-item" routerLink="/upload-donors" routerLinkActive="active" (click)="closeUploadDropdown()">
+                      <i class="pi pi-user"></i>
+                      <span>Upload Donors</span>
+                    </a>
+                  </li>
+                  <li >
+                    <a class="dropdown-item" routerLink="/upload-donations" routerLinkActive="active" (click)="closeUploadDropdown()">
+                      <i class="pi pi-dollar"></i>
+                      <span>Upload Donations</span>
+                    </a>
+                  </li>
+                  <li >
+                    <a class="dropdown-item" routerLink="/upload-charity-projects" routerLinkActive="active" (click)="closeUploadDropdown()">
+                      <i class="pi pi-box"></i>
+                      <span>Upload Charity Projects</span>
+                    </a>
+                  </li>
+                </ul>
               </li>
             </ul>
           </div>
@@ -97,20 +140,21 @@ import { AuthService } from '../../services/auth.service';
 
     .sidebar {
       width: 280px;
+      height: 100vh;
       background: #2c3e50;
       color: white;
-      padding: 1.5rem;
+      padding: 1rem;
       display: flex;
       flex-direction: column;
-      gap: 2rem;
+      overflow: hidden;
     }
 
     .sidebar-header {
       display: flex;
       align-items: center;
       gap: 1rem;
-      padding-bottom: 1.5rem;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 1rem 0;
+      margin-bottom: 1rem;
     }
 
     .sidebar-header i {
@@ -126,15 +170,21 @@ import { AuthService } from '../../services/auth.service';
     }
 
     .sidebar-nav {
-      display: flex;
-      flex-direction: column;
-      gap: 2rem;
-    }
-
-    .nav-section {
+      flex: 1;
       display: flex;
       flex-direction: column;
       gap: 1rem;
+      overflow-y: auto;
+      scrollbar-width: none; /* Firefox */
+      -ms-overflow-style: none; /* IE and Edge */
+    }
+
+    .sidebar-nav::-webkit-scrollbar {
+      display: none; /* Chrome, Safari, Opera */
+    }
+
+    .nav-section {
+      margin-bottom: 1rem;
     }
 
     .nav-title {
@@ -208,12 +258,62 @@ import { AuthService } from '../../services/auth.service';
     .logout-link:hover {
       background: rgba(255, 99, 99, 0.1);
     }
+
+    .dropdown-menu {
+      display: none;
+      position: absolute;
+      background-color: #2c3e50;
+      min-width: 160px;
+      box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+      z-index: 1;
+    }
+
+    .dropdown-menu.show {
+      display: block;
+    }
+
+    .dropdown-item {
+      padding: 0.8rem 1rem;
+      color: rgba(255, 255, 255, 0.8);
+      text-decoration: none;
+      display: block;
+    }
+
+    .dropdown-item:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+    }
+
+    .dropdown-item i {
+      font-size: 1.2rem;
+      width: 1.5rem;
+      text-align: center;
+    }
+
+    .dropdown-item span {
+      font-size: 0.95rem;
+      font-weight: 500;
+    }
   `]
 })
 export class MenuComponent {
-  constructor(private authService: AuthService) {}
+  isUploadDropdownOpen = false;
+
+  constructor(private authService: AuthService) { }
+
+  get isAdmin(): boolean {
+    return this.authService.hasAdminRole();
+  }
 
   logout(): void {
     this.authService.logout();
+  }
+
+  toggleUploadDropdown(): void {
+    this.isUploadDropdownOpen = !this.isUploadDropdownOpen;
+  }
+
+  closeUploadDropdown(): void {
+    this.isUploadDropdownOpen = false;
   }
 }

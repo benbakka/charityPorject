@@ -7,46 +7,86 @@ import { CharityProjectComponent } from './charity-project/charity-project.compo
 import { DonationComponent } from './donation/donation.component';
 import { LoginComponent } from './login/login.component';
 import { authGuard } from './guards/auth.guard';
-import { inject } from '@angular/core';
-import { AuthService } from './services/auth.service';
-import { Router } from '@angular/router';
+import { roleGuard } from './guards/role.guard';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
+import { UploadDonorsComponent } from './components/upload/uploadDonors.component';
+import { UsersComponent } from './components/user-management/users.component';
+import { UploadDonationsComponent } from './components/upload/uploadDonations.component';
+import { UploadCharityProjectComponent } from './components/upload/uploadCharityProject.component';
 
 export const routes: Routes = [
   {
     path: 'login',
-    component: LoginComponent,
-    canActivate: [() => {
-      const authService = inject(AuthService);
-      const router = inject(Router);
-      
-      if (authService.isLoggedIn() && authService.hasAdminRole()) {
-        router.navigate(['/dashboard']);
-        return false;
-      }
-      return true;
-    }]
+    component: LoginComponent
   },
   {
     path: '',
-    canActivate: [() => {
-      const authService = inject(AuthService);
-      const router = inject(Router);
-      
-      if (authService.isLoggedIn() && authService.hasAdminRole()) {
-        router.navigate(['/dashboard']);
-        return false;
-      }
-      router.navigate(['/login']);
-      return false;
-    }],
-    component: LoginComponent
+    redirectTo: '/login',
+    pathMatch: 'full'
   },
-  { path: 'upload', component: UploadComponent, canActivate: [authGuard] },
-  { path: 'orphans', component: OrphanIDCardComponent, canActivate: [authGuard] },
-  { path: 'OrphanCards', component: OrphanCardsComponent, canActivate: [authGuard] },
-  { path: 'donors', component: DonorComponent, canActivate: [authGuard] },
-  { path: 'charity-projects', component: CharityProjectComponent, canActivate: [authGuard] },
-  { path: 'donations', component: DonationComponent, canActivate: [authGuard] },
-  { path: 'dashboard', component: DashboardComponent, canActivate: [authGuard] }
+  { 
+    path: 'dashboard', 
+    component: DashboardComponent, 
+    canActivate: [authGuard, roleGuard(['ROLE_ADMIN'])]
+  },
+  { 
+    path: 'upload', 
+    component: UploadComponent, 
+    canActivate: [authGuard, roleGuard(['ROLE_ADMIN', 'ROLE_USER'])]
+  },
+  { 
+    path: 'upload-donors', 
+    component: UploadDonorsComponent, 
+    canActivate: [authGuard, roleGuard(['ROLE_ADMIN', 'ROLE_USER'])]
+  },
+  { 
+    path: 'upload-donations', 
+    component: UploadDonationsComponent, 
+    canActivate: [authGuard, roleGuard(['ROLE_ADMIN'])]
+  },
+  { 
+    path: 'upload-charity-projects', 
+    component: UploadCharityProjectComponent, 
+    canActivate: [authGuard, roleGuard(['ROLE_ADMIN'])]
+  },
+  { 
+    path: 'orphans', 
+    component: OrphanIDCardComponent, 
+    canActivate: [authGuard, roleGuard(['ROLE_ADMIN', 'ROLE_USER'])]
+  },
+  { 
+    path: 'OrphanCards', 
+    component: OrphanCardsComponent, 
+    canActivate: [authGuard, roleGuard(['ROLE_ADMIN', 'ROLE_USER'])]
+  },
+  { 
+    path: 'donors', 
+    component: DonorComponent, 
+    canActivate: [authGuard, roleGuard(['ROLE_ADMIN', 'ROLE_USER'])]
+  },
+  { 
+    path: 'donors/:id/history',
+    loadComponent: () => import('./donor/donation-history/donation-history.component')
+      .then(m => m.DonationHistoryComponent)
+  },
+  { 
+    path: 'charity-projects', 
+    component: CharityProjectComponent, 
+    canActivate: [authGuard, roleGuard(['ROLE_ADMIN'])]
+  },
+  { 
+    path: 'donations', 
+    component: DonationComponent, 
+    canActivate: [authGuard, roleGuard(['ROLE_ADMIN'])]
+  },
+  { 
+    path: 'users', 
+    component: UsersComponent, 
+    canActivate: [authGuard, roleGuard(['ROLE_ADMIN'])]
+  },
+  // Catch all route - redirect to login
+  {
+    path: '**',
+    redirectTo: '/login'
+  }
 ];

@@ -7,6 +7,7 @@ import { Donation, DonationDTO } from '../models/donation';
   providedIn: 'root'
 })
 export class DonationService {
+  // private apiUrl = 'https://charitybackend.onrender.com/api/donations';
   private apiUrl = 'https://charitybackend.onrender.com/api/donations';
 
   constructor(private http: HttpClient) { }
@@ -76,5 +77,18 @@ export class DonationService {
 
   deleteAllDonations(): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/all`, { headers: this.getAuthHeaders() });
+  }
+
+  uploadExcel(file: File): Observable<any> {
+    const formData = new FormData();
+    formData.append('file', file);
+    return this.http.post(`${this.apiUrl}/upload`, formData);
+  }
+
+  getDonationHistory(donorId: number): Observable<DonationDTO[]> {
+    const headers = this.getAuthHeaders();
+    // Use the donors API endpoint instead of donations
+    const url = this.apiUrl.replace('donations', 'donors');
+    return this.http.get<DonationDTO[]>(`${url}/${donorId}/donations`, { headers });
   }
 }

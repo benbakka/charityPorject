@@ -7,6 +7,8 @@ export interface Donation {
     charityProject: CharityProject;
     donor: Donor;
     dateDonation: Date;
+    donationType: 'one-time' | 'monthly'; // Add this line
+
 }
 
 // DTO for API requests
@@ -16,4 +18,6 @@ export interface DonationDTO {
     charityProject: CharityProject;
     donor: Donor;
     dateDonation: string;  // ISO date string for API communication
+    donationType: 'one-time' | 'monthly'; // Add this line
+
 }
