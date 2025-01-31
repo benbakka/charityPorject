@@ -84,6 +84,11 @@ export const routes: Routes = [
     component: UsersComponent, 
     canActivate: [authGuard, roleGuard(['ROLE_ADMIN'])]
   },
+  { 
+    path: 'projects', 
+    component: CharityProjectComponent, 
+    canActivate: [authGuard, roleGuard(['ROLE_ADMIN', 'ROLE_USER'])]
+  },
   // Catch all route - redirect to login
   {
     path: '**',

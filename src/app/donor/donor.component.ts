@@ -543,23 +543,23 @@ interface DonationHistory {
                  (onRowSelect)="onRowClick($event)">
           <ng-template pTemplate="header">
             <tr>
-              <th>ID</th>
+              <th>Donor ID</th>
               <th>Name</th>
               <th>Email</th>
               <th>Phone</th>
-              <th>Company</th>
               <th>City</th>
+              <th>Country</th>
               <th>Actions</th>
             </tr>
           </ng-template>
           <ng-template pTemplate="body" let-donor>
             <tr>
-              <td>{{donor.id}}</td>
+              <td>{{donor.donorId}}</td>
               <td>{{donor.name}}</td>
               <td>{{donor.email}}</td>
               <td>{{donor.phone}}</td>
-              <td>{{donor.company}}</td>
               <td>{{donor.city}}</td>
+              <td>{{donor.country}}</td>
               <td>
                 <div class="action-buttons">
                   <button pButton 
@@ -600,40 +600,61 @@ interface DonationHistory {
           <div class="form-section">
             <h3>Donor Information</h3>
             <div class="field">
+              <label for="donorId">Donor ID</label>
+              <input pInputText id="donorId" [(ngModel)]="donor.donorId" required autofocus />
+              <small class="p-error" *ngIf="submitted && !donor.donorId">Donor ID is required.</small>
+            </div>
+            <div class="field">
               <label for="name">Name</label>
-              <input type="text" pInputText id="name" [(ngModel)]="donor.name" required autofocus />
+              <input pInputText id="name" [(ngModel)]="donor.name" required />
+              <small class="p-error" *ngIf="submitted && !donor.name">Name is required.</small>
             </div>
             <div class="field">
               <label for="email">Email</label>
-              <input type="email" pInputText id="email" [(ngModel)]="donor.email" required />
+              <input pInputText id="email" [(ngModel)]="donor.email" required />
+              <small class="p-error" *ngIf="submitted && !donor.email">Email is required.</small>
             </div>
             <div class="field">
               <label for="phone">Phone</label>
-              <input type="tel" pInputText id="phone" [(ngModel)]="donor.phone" required />
+              <input pInputText id="phone" [(ngModel)]="donor.phone" required />
+              <small class="p-error" *ngIf="submitted && !donor.phone">Phone is required.</small>
             </div>
             <div class="field">
               <label for="company">Company</label>
-              <input type="text" pInputText id="company" [(ngModel)]="donor.company" />
+              <input pInputText id="company" [(ngModel)]="donor.company" />
             </div>
           </div>
 
           <div class="form-section">
             <h3>Address Information</h3>
             <div class="field">
-              <label for="address">Address</label>
-              <input type="text" pInputText id="address" [(ngModel)]="donor.address" />
+              <label for="address">Address Line 1</label>
+              <input pInputText id="address" [(ngModel)]="donor.address" required />
+              <small class="p-error" *ngIf="submitted && !donor.address">Address is required.</small>
+            </div>
+            <div class="field">
+              <label for="addressTwo">Address Line 2</label>
+              <input pInputText id="addressTwo" [(ngModel)]="donor.addressTwo" />
             </div>
             <div class="field">
               <label for="city">City</label>
-              <input type="text" pInputText id="city" [(ngModel)]="donor.city" />
+              <input pInputText id="city" [(ngModel)]="donor.city" required />
+              <small class="p-error" *ngIf="submitted && !donor.city">City is required.</small>
             </div>
             <div class="field">
               <label for="state">State</label>
-              <input type="text" pInputText id="state" [(ngModel)]="donor.state" />
+              <input pInputText id="state" [(ngModel)]="donor.state" required />
+              <small class="p-error" *ngIf="submitted && !donor.state">State is required.</small>
+            </div>
+            <div class="field">
+              <label for="country">Country</label>
+              <input pInputText id="country" [(ngModel)]="donor.country" required />
+              <small class="p-error" *ngIf="submitted && !donor.country">Country is required.</small>
             </div>
             <div class="field">
               <label for="zip">ZIP Code</label>
-              <input type="text" pInputText id="zip" [(ngModel)]="donor.zip" />
+              <input pInputText id="zip" [(ngModel)]="donor.zip" required />
+              <small class="p-error" *ngIf="submitted && !donor.zip">ZIP code is required.</small>
             </div>
           </div>
         </div>
@@ -651,13 +672,16 @@ export class DonorComponent implements OnInit {
   filteredDonors: Donor[] = [];
   donor: Donor = {
     name: '',
+    donorId: '',
     address: '',
+    addressTwo: '',
     phone: '',
     city: '',
     state: '',
     zip: '',
     company: '',
-    email: ''
+    email: '',
+    country: ''
   };
   donorDialog: boolean = false;
   submitted: boolean = false;
@@ -710,13 +734,16 @@ export class DonorComponent implements OnInit {
   openNew() {
     this.donor = {
       name: '',
+      donorId: '',
       address: '',
+      addressTwo: '',
       phone: '',
       city: '',
       state: '',
       zip: '',
       company: '',
-      email: ''
+      email: '',
+      country: ''
     };
     this.submitted = false;
     this.donorDialog = true;
@@ -860,13 +887,16 @@ export class DonorComponent implements OnInit {
   private getEmptyDonor(): Donor {
     return {
       name: '',
+      donorId: '',
       address: '',
+      addressTwo: '',
       phone: '',
       city: '',
       state: '',
       zip: '',
       company: '',
-      email: ''
+      email: '',
+      country: ''
     };
   }
 }

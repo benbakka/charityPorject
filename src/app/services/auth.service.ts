@@ -5,7 +5,8 @@ import { catchError, tap } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { User } from '../models/user.model';
 
-const AUTH_API = 'https://charitybackend.onrender.com/api/auth/';
+// const AUTH_API = 'https://charitybackend.onrender.com/api/auth/';
+const AUTH_API = 'http://localhost:8080/api/auth/';
 
 interface AuthResponse {
   token: string;
@@ -42,13 +43,13 @@ export class AuthService {
     );
   }
 
-  saveUser(username: string, email: string, password: string): Observable<any> {
+  saveUser(username: string, email: string, password: string, role: string = 'ROLE_USER'): Observable<any> {
     const headers = new HttpHeaders().set('Accept', 'text/plain');
     return this.http.post(AUTH_API + 'register', {
       username,
       email,
       password,
-      role: 'ROLE_USER' // Default role for new users
+      role
     }, { headers, responseType: 'text' }).pipe(
       catchError(this.handleError)
     );

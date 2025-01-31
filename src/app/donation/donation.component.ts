@@ -123,7 +123,7 @@ import { Donor } from '../models/donor';
             <td>{{donation.donor.name}}</td>
             <td>{{donation.charityProject.name}}</td>
             <td>{{donation.amount | currency}}</td>
-            <td>{{donation.dateDonation | date:'mediumDate'}}</td>
+            <td>{{donation.dateDonation | date:'MM/dd/yyyy'}}</td>
             <td>
               <div class="action-buttons">
                 <button pButton icon="pi pi-pencil" class="p-button-rounded p-button-success action-btn" (click)="editDonation(donation)"></button>
@@ -774,7 +774,7 @@ export class DonationComponent implements OnInit {
   calendarConfig = {
     yearRange: '2020:2030',
     showTime: false,
-    dateFormat: 'yy-mm-dd',
+    dateFormat: 'mm/dd/yy',
     monthNavigator: true,
     yearNavigator: true,
     showIcon: true,

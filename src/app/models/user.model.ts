@@ -1,7 +1,14 @@
+export interface Permission {
+  route: string;
+  canAccess: boolean;
+}
+
 export interface User {
-  id: number; // Optional: Use this if the backend includes an ID field
+  id: number;
   username: string;
   email: string;
-  password?: string; // Optional: Include this only when creating/updating users
-  role: string; // e.g., "USER", "ADMIN"
+  password?: string;
+  role: string;
+  roles?: string[];
+  permissions?: Permission[];
 }

@@ -1,86 +1,175 @@
-.login-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+@import url("https://fonts.googleapis.com/css?family=Raleway:400,700");
+
+
+:host {
+  display: block;
   min-height: 100vh;
-  background-color: #f5f5f5;
+  font-family: "Raleway", sans-serif;
 }
 
-.login-card {
-  background: white;
-  padding: 2rem;
-  border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  width: 100%;
-  max-width: 400px;
+
+
+.top:before,
+.top:after,
+.bottom:before,
+.bottom:after {
+  content: "";
+  display: block;
+  position: absolute;
+  width: 300vmax;
+  height: 300vmax;
+  top: 50%;
+  left: 50%;
+  margin-top: -150vmax;
+  transform-origin: 0 50%;
+  transition: all 0.5s cubic-bezier(0.445, 0.05, 0, 1);
+  z-index: 10;
+  opacity: 0.65;
+  transition-delay: 0.2s;
+}
+
+.container:hover .top:before,
+.container:hover .top:after,
+.container:hover .bottom:before,
+.container:hover .bottom:after,
+.container:active .top:before,
+.container:active .top:after,
+.container:active .bottom:before,
+.container:active .bottom:after {
+  margin-left: 200px;
+  transform-origin: -200px 50%;
+  transition-delay: 0s;
+}
+
+.container:hover .center,
+.container:active .center {
+  opacity: 1;
+  transition-delay: 0.2s;
+}
+
+.top:before {
+  transform: rotate(45deg);
+  background: #28a745;
+}
+
+.top:after {
+  transform: rotate(135deg);
+  background: #218838;
+}
+
+.bottom:before {
+  transform: rotate(-45deg);
+  background: #1e7e34;
+}
+
+.bottom:after {
+  transform: rotate(-135deg);
+  background: #155724;
+}
+
+.center {
+  position: absolute;
+  width: 400px;
+  height: 400px;
+  top: 50%;
+  left: 50%;
+  margin-left: -200px;
+  margin-top: -200px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 30px;
+  opacity: 0;
+  transition: all 0.5s cubic-bezier(0.445, 0.05, 0, 1);
+  transition-delay: 0s;
+  color: #333;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  z-index: 11;
+}
+
+.logo-container {
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.logo {
+  max-width: 120px;
+  height: auto;
+  margin-bottom: 1rem;
 }
 
 h2 {
-  text-align: center;
-  color: #333;
+  color: #28a745;
   margin-bottom: 2rem;
+  font-weight: 700;
+  text-align: center;
 }
 
-.form-group {
-  margin-bottom: 1.5rem;
-}
-
-label {
-  display: block;
-  margin-bottom: 0.5rem;
-  color: #666;
-}
-
-.form-control {
+form {
   width: 100%;
-  padding: 0.75rem;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
-.form-control:focus {
+input {
+  width: 100%;
+  padding: 15px;
+  margin: 5px 0;
+  border-radius: 8px;
+  border: 2px solid #e0e0e0;
+  font-family: inherit;
+  transition: all 0.3s ease;
+}
+
+input:focus {
   outline: none;
-  border-color: #4a90e2;
-  box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.2);
+  border-color: #28a745;
+  box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.2);
 }
 
 .error-message {
   color: #dc3545;
-  margin-bottom: 1rem;
+  margin: 10px 0;
   text-align: center;
+  font-size: 0.9rem;
 }
 
 .btn-login {
   width: 100%;
-  padding: 0.75rem;
-  background-color: #4a90e2;
+  padding: 15px;
+  margin-top: 10px;
+  background: linear-gradient(135deg, #28a745 0%, #218838 100%);
   color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: 8px;
   font-size: 1rem;
+  font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.2s;
-  margin-bottom: 1.5rem;
+  font-family: inherit;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .btn-login:hover {
-  background-color: #357abd;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(40, 167, 69, 0.4);
+  background: linear-gradient(135deg, #218838 0%, #1e7e34 100%);
 }
 
 .btn-login:disabled {
-  background-color: #ccc;
+  background: #ccc;
   cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
 }
 
-.default-credentials {
-  margin-top: 1rem;
-  padding-top: 1rem;
-  border-top: 1px solid #eee;
-  text-align: center;
-  color: #666;
-}
-
-.default-credentials p {
-  margin: 0.25rem 0;
+@media (max-width: 480px) {
+  .center {
+    width: 90%;
+    margin-left: -45%;
+    padding: 20px;
+  }
 }

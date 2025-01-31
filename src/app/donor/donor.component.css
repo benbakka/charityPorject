@@ -26,3 +26,59 @@
     color: red;
     margin-left: 4px;
 }
+
+
+
+
+/* Add to existing styles */
+:host ::ng-deep .donor-table .p-selectable-row {
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  :host ::ng-deep .donor-table .p-selectable-row:hover {
+    background-color: #f8f9fa !important;
+  }
+
+  :host ::ng-deep .donor-table .p-highlight {
+    background-color: #e8f5e9 !important;
+    border-left: 4px solid #4CAF50;
+  }
+
+  .donor-details-section {
+    margin-top: 2rem;
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  }
+
+  .donation-management-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 2rem 0 1rem 0;
+  }
+
+  .donor-info-card {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .info-row {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .info-label {
+    font-weight: 600;
+    color: #2c3e50;
+    min-width: 80px;
+  }
+
+  .info-value {
+    color: #4b5563;
+  }

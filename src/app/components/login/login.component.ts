@@ -103,7 +103,8 @@ export class LoginComponent implements OnInit {
       this.authService.login(username, password).subscribe({
         next: (response) => {
           this.snackBar.open('Login successful!', 'Close', { duration: 3000 });
-          this.router.navigate(['/dashboard']);
+          // Navigate to projects since user has permission for it
+          this.router.navigate(['/projects']);
         },
         error: (error) => {
           console.error('Login failed:', error);

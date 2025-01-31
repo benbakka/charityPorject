@@ -1,7 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../services/auth.service';
+import { PermissionService } from '../../services/permission.service';
+import { Permission } from '../../models/user.model';
 
 @Component({
   selector: 'app-menu',
@@ -30,19 +32,19 @@ import { AuthService } from '../../services/auth.service';
           <div class="nav-section">
             <h2 class="nav-title">Management</h2>
             <ul class="nav-list">
-            <li class="nav-item" *ngIf="isAdmin">
+              <li class="nav-item" *ngIf="isAdmin">
                 <a class="nav-link" routerLink="/users" routerLinkActive="active">
                   <i class="pi pi-users"></i>
                   <span>Users</span>
                 </a>
               </li>
-              <li class="nav-item">
+              <li class="nav-item" *ngIf="hasPermission('/orphans')">
                 <a class="nav-link" routerLink="/orphans" routerLinkActive="active">
                   <i class="pi pi-user"></i>
                   <span>Orphans</span>
                 </a>
               </li>
-             <li class="nav-item">
+              <li class="nav-item" *ngIf="hasPermission('/OrphanCards')">
                 <a class="nav-link" routerLink="/OrphanCards" routerLinkActive="active">
                   <i class="pi pi-id-card"></i>
                   <span>Orphan Cards</span>
@@ -51,36 +53,26 @@ import { AuthService } from '../../services/auth.service';
             </ul>
           </div>
 
-         
-
-          <div class="nav-section" *ngIf="isAdmin">
+          <div class="nav-section" *ngIf="hasAnyProjectPermission()">
             <h2 class="nav-title">Projects & Donations</h2>
             <ul class="nav-list">
-             <li class="nav-item">
+              <li class="nav-item" *ngIf="hasPermission('/donors')">
                 <a class="nav-link" routerLink="/donors" routerLinkActive="active">
                   <i class="pi pi-heart-fill"></i>
                   <span>Donors</span>
                 </a>
               </li>
-              <li class="nav-item">
+              <li class="nav-item" *ngIf="hasPermission('/charity-projects')">
                 <a class="nav-link" routerLink="/charity-projects" routerLinkActive="active">
                   <i class="pi pi-box"></i>
                   <span>Charity Projects</span>
                 </a>
               </li>
-              <li class="nav-item">
-                <a class="nav-link" routerLink="/donations" routerLinkActive="active">
-                  <i class="pi pi-dollar"></i>
-                  <span>Donations</span>
-                </a>
-              </li>
-
+             
             </ul>
           </div>
 
-        
-
-          <div class="nav-section">
+          <div class="nav-section" *ngIf="hasAnyUploadPermission()">
             <h2 class="nav-title">Upload</h2>
             <ul class="nav-list">
               <li class="nav-item dropdown">
@@ -89,25 +81,25 @@ import { AuthService } from '../../services/auth.service';
                   <span>Uploads</span>
                 </a>
                 <ul class="dropdown-menu" [class.show]="isUploadDropdownOpen">
-                  <li>
+                  <li *ngIf="hasPermission('/upload')">
                     <a class="dropdown-item" routerLink="/upload" routerLinkActive="active" (click)="closeUploadDropdown()">
                       <i class="pi pi-users"></i>
                       <span>Upload Orphans</span>
                     </a>
                   </li>
-                  <li >
+                  <li *ngIf="hasPermission('/upload-donors')">
                     <a class="dropdown-item" routerLink="/upload-donors" routerLinkActive="active" (click)="closeUploadDropdown()">
                       <i class="pi pi-user"></i>
                       <span>Upload Donors</span>
                     </a>
                   </li>
-                  <li >
+                  <li *ngIf="hasPermission('/upload-donations')">
                     <a class="dropdown-item" routerLink="/upload-donations" routerLinkActive="active" (click)="closeUploadDropdown()">
                       <i class="pi pi-dollar"></i>
                       <span>Upload Donations</span>
                     </a>
                   </li>
-                  <li >
+                  <li *ngIf="hasPermission('/upload-charity-projects')">
                     <a class="dropdown-item" routerLink="/upload-charity-projects" routerLinkActive="active" (click)="closeUploadDropdown()">
                       <i class="pi pi-box"></i>
                       <span>Upload Charity Projects</span>
@@ -133,7 +125,7 @@ import { AuthService } from '../../services/auth.service';
     </div>
   `,
   styles: [`
-     .app-container {
+    .app-container {
       display: flex;
       min-height: 100vh;
     }
@@ -175,12 +167,12 @@ import { AuthService } from '../../services/auth.service';
       flex-direction: column;
       gap: 1rem;
       overflow-y: auto;
-      scrollbar-width: none; /* Firefox */
-      -ms-overflow-style: none; /* IE and Edge */
+      scrollbar-width: none;
+      -ms-overflow-style: none;
     }
 
     .sidebar-nav::-webkit-scrollbar {
-      display: none; /* Chrome, Safari, Opera */
+      display: none;
     }
 
     .nav-section {
@@ -296,13 +288,59 @@ import { AuthService } from '../../services/auth.service';
     }
   `]
 })
-export class MenuComponent {
+export class MenuComponent implements OnInit {
   isUploadDropdownOpen = false;
+  userPermissions: Permission[] = [];
 
-  constructor(private authService: AuthService) { }
+  constructor(
+    private authService: AuthService,
+    private permissionService: PermissionService
+  ) {}
+
+  ngOnInit() {
+    this.loadUserPermissions();
+  }
+
+  private loadUserPermissions() {
+    const userStr = localStorage.getItem('user');
+    if (userStr) {
+      const user = JSON.parse(userStr);
+      if (user.id) {
+        this.permissionService.getUserPermissions(user.id).subscribe({
+          next: (permissions) => {
+            console.log('Loaded user permissions:', permissions);
+            this.userPermissions = permissions;
+          },
+          error: (error) => {
+            console.error('Error loading permissions:', error);
+          }
+        });
+      }
+    }
+  }
 
   get isAdmin(): boolean {
     return this.authService.hasAdminRole();
+  }
+
+  hasPermission(route: string): boolean {
+    if (this.isAdmin) return true;
+    return this.userPermissions.some(p => p.route === route && p.canAccess);
+  }
+
+  hasAnyProjectPermission(): boolean {
+    if (this.isAdmin) return true;
+    return this.hasPermission('/donors') || 
+           this.hasPermission('/charity-projects') || 
+           this.hasPermission('/donations');
+  }
+
+  hasAnyUploadPermission(): boolean {
+    if (this.isAdmin) return true;
+    return this.hasPermission('/upload') || 
+           this.hasPermission('/upload-donors') || 
+           this.hasPermission('/upload-donations') || 
+           this.hasPermission('/upload-charity-projects');
   }
 
   logout(): void {

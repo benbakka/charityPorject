@@ -39,6 +39,11 @@ export class LoginComponent implements OnInit {
     }
   }
 
+  containerClick() {
+    // This method is needed to trigger the hover effect on mobile devices
+    // The CSS handles the animation
+  }
+
   onSubmit(): void {
     console.log('Form submitted', this.loginForm.value); // Debug log
     

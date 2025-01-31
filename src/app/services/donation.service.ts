@@ -8,7 +8,7 @@ import { Donation, DonationDTO } from '../models/donation';
 })
 export class DonationService {
   // private apiUrl = 'https://charitybackend.onrender.com/api/donations';
-  private apiUrl = 'https://charitybackend.onrender.com/api/donations';
+  private apiUrl = 'http://localhost:8080/api/donations';
 
   constructor(private http: HttpClient) { }
 
@@ -85,7 +85,7 @@ export class DonationService {
     return this.http.post(`${this.apiUrl}/upload`, formData);
   }
 
-  getDonationHistory(donorId: number): Observable<DonationDTO[]> {
+  getDonationsByDonorId(donorId: number): Observable<DonationDTO[]> {
     const headers = this.getAuthHeaders();
     // Use the donors API endpoint instead of donations
     const url = this.apiUrl.replace('donations', 'donors');
