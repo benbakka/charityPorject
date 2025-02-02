@@ -27,7 +27,7 @@ export class AuthService {
   ) { }
 
   login(username: string, password: string): Observable<AuthResponse> {
-    console.log('Login request:', { username }); // Debug log
+    console.log('Login request: ', { username , AUTH_API}+'login' ); // Debug log
     return this.http.post<AuthResponse>(AUTH_API + 'login', {
       username,
       password
@@ -38,7 +38,8 @@ export class AuthService {
           localStorage.setItem('auth_token', response.token);
           localStorage.setItem('user', JSON.stringify(response));
         }
-      }),
+      }
+      ),
       catchError(this.handleError)
     );
   }
