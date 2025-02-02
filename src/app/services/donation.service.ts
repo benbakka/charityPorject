@@ -8,7 +8,7 @@ import { Donation, DonationDTO } from '../models/donation';
 })
 export class DonationService {
   // private apiUrl = 'https://charitybackend.onrender.com/api/donations';
-  private apiUrl = 'http://localhost/api/api/donations';
+  private apiUrl = 'http://144.126.140.108/api/donations';
 
   constructor(private http: HttpClient) { }
 
