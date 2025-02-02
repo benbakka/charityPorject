@@ -9,7 +9,7 @@ import autoTable from 'jspdf-autotable';
   providedIn: 'root'
 })
 export class EmailService {
-  private apiUrl = 'http://localhost:8080/api/email';
+  private apiUrl = 'http://144.126.140.108/api/email';
 
   constructor(private http: HttpClient) { }
 
