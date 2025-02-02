@@ -32,7 +32,7 @@ export class AuthService {
 
     console.log('Login request to:', loginUrl, 'Payload:', payload);
 
-    return this.http.post<AuthResponse>(loginUrl, payload).pipe(
+    return this.http.post<AuthResponse>(loginUrl, payload , { withCredentials: true }).pipe(
         tap(response => {
           console.log('Login response:', response);
 
