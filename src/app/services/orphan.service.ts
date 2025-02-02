@@ -10,7 +10,7 @@ import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 export class OrphanService {
 
   // private apiUrl = 'https://charitybackend.onrender.com/api/orphans';
-  private apiUrl = 'http://144.126.140.108/api/orphans';
+  private apiUrl = '/api/orphans';
 
   constructor(
     private http: HttpClient,
@@ -30,7 +30,7 @@ export class OrphanService {
             // Create a URL that includes the auth token
             const token = localStorage.getItem('auth_token');
             // orphan.photo = `https://charitybackend.onrender.com${orphan.photo}`;
-            orphan.photo = `http://144.126.140.108${orphan.photo}`;
+            orphan.photo = `${orphan.photo}`;
             // Create blob URL for the image
             this.http.get(orphan.photo, {
               headers: this.getAuthHeaders(),
