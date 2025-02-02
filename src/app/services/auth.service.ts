@@ -6,7 +6,7 @@ import { Router } from '@angular/router';
 import { User } from '../models/user.model';
 
 // const AUTH_API = 'https://charitybackend.onrender.com/api/auth/';
-const AUTH_API = 'http://144.126.140.108/api/auth/';
+const AUTH_API = 'http://144.126.140.108/api/api/auth/';
 
 interface AuthResponse {
   token: string;

@@ -10,7 +10,7 @@ import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 export class OrphanService {
 
   // private apiUrl = 'https://charitybackend.onrender.com/api/orphans';
-  private apiUrl = 'http://144.126.140.108/api/orphans';
+  private apiUrl = 'http://144.126.140.108/api/api/orphans';
 
   constructor(
     private http: HttpClient,
