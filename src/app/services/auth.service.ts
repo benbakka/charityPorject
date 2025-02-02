@@ -27,20 +27,44 @@ export class AuthService {
   ) { }
 
   login(username: string, password: string): Observable<AuthResponse> {
-    console.log('Login request: ', { username , AUTH_API}+'login' ); // Debug log
-    return this.http.post<AuthResponse>(AUTH_API + 'login', {
-      username,
-      password
-    }).pipe(
-      tap(response => {
-        console.log('Login response received:', response); // Debug log
-        if (response && response.token) {
-          localStorage.setItem('auth_token', response.token);
-          localStorage.setItem('user', JSON.stringify(response));
-        }
-      }
-      ),
-      catchError(this.handleError)
+    const loginUrl = AUTH_API + 'login';
+    const payload = { username, password };
+
+    console.log('Login request to:', loginUrl, 'Payload:', payload);
+
+    return this.http.post<AuthResponse>(loginUrl, payload).pipe(
+        tap(response => {
+          console.log('Login response:', response);
+
+          if (response?.token) {
+            localStorage.setItem('auth_token', response.token);
+            localStorage.setItem('user', JSON.stringify(response));
+            console.log('Token stored successfully');
+          } else {
+            console.error('Login succeeded but no token received:', response);
+            throw new Error('Authentication failed: No token in response');
+          }
+        }),
+        catchError((error: HttpErrorResponse) => {
+          console.error('Login error:', error);
+
+          // Log detailed error information
+          if (error.error instanceof ErrorEvent) {
+            // Client-side error
+            console.error('Client-side error:', error.error.message);
+          } else {
+            // Server-side error
+            console.error(`Server error: ${error.status} - ${error.statusText}`);
+            console.error('Error body:', error.error);
+          }
+
+          // Re-throw the error for component handling
+          return throwError(() => new Error(
+              error.error?.message ||
+              error.message ||
+              'An unknown error occurred during login'
+          ));
+        })
     );
   }
 
